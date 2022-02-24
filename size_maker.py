@@ -32,4 +32,17 @@ def size_maker(responses_pack): #list(d.keys()) - response у географич
                 if organization['properties']['boundedBy'][1][1] > points['top'] \
                         or points['top'] == 'Not defined':
                     points['top'] = organization['properties']['boundedBy'][1][1]
+    if points['left'] < 0 and points['right'] < 0:
+        delta_1 = abs(points['right']) - abs(points['left'])
+    elif points['left'] < 0:
+        delta_1 = abs(points['left']) + points['right']
+    else:
+        delta_1 = points['right'] - points['left']
+    if points['bottom'] < 0 and points['top'] < 0:
+        delta_2 = abs(points['top']) - abs(points['bottom'])
+    elif points['bottom'] < 0:
+        delta_2 = abs(points['bottom']) + points['top']
+    else:
+        delta_2 = points['top'] - points['bottom']
+    return delta_1, delta_2
 
