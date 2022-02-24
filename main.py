@@ -1,16 +1,54 @@
-# This is a sample Python script.
+import sys
+from io import BytesIO
+import requests
+from PIL import Image
+import argparse
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+parser = argparse.ArgumentParser()
+parser.add_argument('address', metavar='str', nargs='+',
+                    type=str, help='address to show')
+parser.add_argument('--delta', default='0.005', type=str,
+                    help='delta')
+args = parser.parse_args()
+toponym_to_find = " ".join(args.address)
+delta = args.delta
+print(toponym_to_find)
+print(delta)
+geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
 
+geocoder_params = {
+    "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
+    "geocode": toponym_to_find,
+    "format": "json"}
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+response = requests.get(geocoder_api_server, params=geocoder_params)
 
+if not response:
+    # обработка ошибочной ситуации
+    pass
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+# Преобразуем ответ в json-объект
+json_response = response.json()
+# Получаем первый топоним из ответа геокодера.
+toponym = json_response["response"]["GeoObjectCollection"][
+    "featureMember"][0]["GeoObject"]
+# Координаты центра топонима:
+toponym_coodrinates = toponym["Point"]["pos"]
+# Долгота и широта:
+toponym_longitude, toponym_lattitude = toponym_coodrinates.split(" ")
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+# Собираем параметры для запроса к StaticMapsAPI:
+map_params = {
+    "ll": ",".join([toponym_longitude, toponym_lattitude]),
+    "spn": ",".join([delta, delta]),
+    "l": "map"
+}
+
+map_api_server = "http://static-maps.yandex.ru/1.x/"
+# ... и выполняем запрос
+response = requests.get(map_api_server, params=map_params)
+
+Image.open(BytesIO(
+    response.content)).show()
+# Создадим картинку
+# и тут же ее покажем встроенным просмотрщиком операционной системы
