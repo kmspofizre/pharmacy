@@ -47,10 +47,8 @@ map_params = {
     "pt": f'{toponym_longitude},{toponym_lattitude},pm2wtm~'
           f'{"~".join(define_working_hours(pharmacy_response))}'
 }
-print(map_params)
 map_api_server = "http://static-maps.yandex.ru/1.x/"
 map_response = requests.get(map_api_server, params=map_params)
-print(map_response)
 delta_r = delta_finder(toponym_coodrinates.split(), pharmacy_response["features"][0]["geometry"]["coordinates"])
 print(pharmacy_response['features'][0]['properties']['name'])
 print(pharmacy_response['features'][0]['properties']['description'])
