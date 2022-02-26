@@ -31,4 +31,19 @@ def delta_finder(ll1, ll2):
 
 
 def define_working_hours(responses):
-    pass
+    sp = []
+    for elem in responses['features']:
+        f = False
+        for elem1 in elem['properties']['CompanyMetaData']['Hours']['Availabilities']:
+            if 'TwentyFourHours' in elem1:
+                if elem1['TwentyFourHours']:
+                    sp.append(f"{','.join(map(str, elem['geometry']['coordinates']))},pm2gnm")
+                    f = True
+                    break
+            if 'Intervals' in elem1:
+                f = True
+                sp.append(f"{','.join(map(str, elem['geometry']['coordinates']))},pm2blm")
+                break
+        if not f:
+            sp.append(f"{','.join(map(str, elem['geometry']['coordinates']))},pm2grm")
+    return sp

@@ -3,7 +3,7 @@ import requests
 from PIL import Image
 import argparse
 from size_maker import size_maker
-from delta_finder import delta_finder
+from delta_finder import delta_finder, define_working_hours
 
 parser = argparse.ArgumentParser()
 parser.add_argument('address', metavar='str', nargs='+',
@@ -35,7 +35,7 @@ search_params = {
     "lang": "ru_RU",
     "ll": ",".join([toponym_longitude, toponym_lattitude]),
     "type": "biz",
-    "results": '2'
+    "results": '10'
 }
 
 pharmacy_response = requests.get(search_api_server, params=search_params).json()
@@ -44,11 +44,13 @@ map_params = {
     "ll": ll,
     "spn": delta,
     "l": "map",
-    "pt": f'{",".join([toponym_longitude, toponym_lattitude])},org~'
-          f'{",".join(map(str, pharmacy_response["features"][0]["geometry"]["coordinates"]))}'
+    "pt": f'{toponym_longitude},{toponym_lattitude},pm2wtm~'
+          f'{"~".join(define_working_hours(pharmacy_response))}'
 }
+print(map_params)
 map_api_server = "http://static-maps.yandex.ru/1.x/"
 map_response = requests.get(map_api_server, params=map_params)
+print(map_response)
 delta_r = delta_finder(toponym_coodrinates.split(), pharmacy_response["features"][0]["geometry"]["coordinates"])
 print(pharmacy_response['features'][0]['properties']['name'])
 print(pharmacy_response['features'][0]['properties']['description'])
