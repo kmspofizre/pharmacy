@@ -31,11 +31,11 @@ toponym_coodrinates = toponym["Point"]["pos"]
 toponym_longitude, toponym_lattitude = toponym_coodrinates.split(" ")
 search_params = {
     "apikey": "dda3ddba-c9ea-4ead-9010-f43fbc15c6e3",
-    "text": "глобус",
+    "text": "аптека",
     "lang": "ru_RU",
     "ll": ",".join([toponym_longitude, toponym_lattitude]),
     "type": "biz",
-    "results": '1'
+    "results": '2'
 }
 
 pharmacy_response = requests.get(search_api_server, params=search_params).json()
